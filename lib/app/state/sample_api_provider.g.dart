@@ -6,19 +6,20 @@ part of 'sample_api_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$pokemonHash() => r'f3e75c4a2a414f8853870e4e867afbb784a38e13';
+String _$pokemonStateHash() => r'8602cac2a47e05fdb21f7231330a867b75f82aad';
 
-/// See also [pokemon].
-@ProviderFor(pokemon)
-final pokemonProvider = AutoDisposeFutureProvider<Pokemon>.internal(
-  pokemon,
-  name: r'pokemonProvider',
+/// See also [PokemonState].
+@ProviderFor(PokemonState)
+final pokemonStateProvider =
+    AutoDisposeAsyncNotifierProvider<PokemonState, Pokemon>.internal(
+  PokemonState.new,
+  name: r'pokemonStateProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$pokemonHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$pokemonStateHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef PokemonRef = AutoDisposeFutureProviderRef<Pokemon>;
+typedef _$PokemonState = AutoDisposeAsyncNotifier<Pokemon>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

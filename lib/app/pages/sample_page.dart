@@ -14,35 +14,38 @@ class SamplePage extends ConsumerWidget {
     var sampleStateActions = ref.watch(sampleStateProvider.notifier);
     return SafeArea(
         child: Scaffold(
-            appBar: AppBar(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const Text('Home Page'),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      ElevatedButton(
-                          onPressed: () {
-                            sampleStateActions.increment();
-                          },
-                          child: Row(
-                            children: [
-                              Text('${sampleState.counter.toString()} ++')
-                            ],
-                          )),
-                    ],
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        const SampleApiPageRoute().go(context);
-                      },
-                      icon: const Icon(Icons.catching_pokemon))
-                ],
-              ),
-            ),
+            appBar: _buildAppBar(sampleStateActions, sampleState, context),
             body: Container(color: Colors.blue)));
+  }
+
+  AppBar _buildAppBar(SampleState sampleStateActions,
+      SampleStateData sampleState, BuildContext context) {
+    return AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const Text('Home Page'),
+              const SizedBox(
+                width: 10,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    sampleStateActions.increment();
+                  },
+                  child: Row(
+                    children: [Text('${sampleState.counter.toString()} ++')],
+                  )),
+            ],
+          ),
+          IconButton(
+              onPressed: () {
+                const SampleApiPageRoute().go(context);
+              },
+              icon: const Icon(Icons.catching_pokemon))
+        ],
+      ),
+    );
   }
 }

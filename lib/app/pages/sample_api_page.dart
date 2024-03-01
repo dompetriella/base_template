@@ -17,53 +17,19 @@ class SampleApiPage extends HookConsumerWidget {
     var sampleStateActions = ref.watch(sampleStateProvider.notifier);
     var pokemonState = ref.watch(pokemonStateProvider);
     var pokemonStateActions = ref.watch(pokemonStateProvider.notifier);
-    ValueNotifier<bool> open = useState(false);
+    ValueNotifier<bool> openBall = useState(false);
 
     Future.delayed(500.ms).then(
       (value) {
-        open.value = true;
+        openBall.value = true;
       },
     );
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(children: [
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        const SamplePageRoute().go(context);
-                      },
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                    const Text('Api Route'),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    ElevatedButton(
-                        onPressed: () {
-                          sampleStateActions.increment();
-                        },
-                        child: Row(
-                          children: [
-                            Text('${sampleState.counter.toString()} ++')
-                          ],
-                        )),
-                  ],
-                )
-              ]),
-              IconButton(
-                  onPressed: () {
-                    pokemonStateActions.getPokemon(open);
-                  },
-                  icon: Icon(Icons.refresh))
-            ],
-          ),
-        ),
+        appBar: _buildAppBar(context, sampleStateActions, sampleState,
+            pokemonStateActions, openBall),
+        // this is the async stuff
         body: Builder(builder: (context) {
           ref.watch(pokemonStateProvider.notifier);
           return Column(
@@ -72,7 +38,7 @@ class SampleApiPage extends HookConsumerWidget {
               pokemonState.when(data: (data) {
                 return ShowPokemon(
                   value: data,
-                  open: open,
+                  openBall: openBall,
                 );
               }, error: (error, stackTrace) {
                 return ShowError();
@@ -82,6 +48,49 @@ class SampleApiPage extends HookConsumerWidget {
             ],
           );
         }),
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(
+      BuildContext context,
+      SampleState sampleStateActions,
+      SampleStateData sampleState,
+      PokemonState pokemonStateActions,
+      ValueNotifier<bool> open) {
+    return AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(children: [
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    const SamplePageRoute().go(context);
+                  },
+                  icon: const Icon(Icons.arrow_back),
+                ),
+                const Text('Api Route'),
+                const SizedBox(
+                  width: 10,
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      sampleStateActions.increment();
+                    },
+                    child: Row(
+                      children: [Text('${sampleState.counter.toString()} ++')],
+                    )),
+              ],
+            )
+          ]),
+          IconButton(
+              onPressed: () {
+                pokemonStateActions.getPokemon(open);
+              },
+              icon: Icon(Icons.refresh))
+        ],
       ),
     );
   }
@@ -110,8 +119,8 @@ class ShowError extends StatelessWidget {
 
 class ShowPokemon extends HookWidget {
   final Pokemon value;
-  final ValueNotifier open;
-  const ShowPokemon({super.key, required this.value, required this.open});
+  final ValueNotifier openBall;
+  const ShowPokemon({super.key, required this.value, required this.openBall});
 
   @override
   Widget build(BuildContext context) {
@@ -174,7 +183,7 @@ class ShowPokemon extends HookWidget {
                 width: 300,
                 decoration: BoxDecoration(
                     gradient: RadialGradient(colors: [Colors.white, bgColor])),
-                child: open.value
+                child: openBall.value
                     ? Image.network(
                         value.sprites['front_default'],
                         fit: BoxFit.fitHeight,

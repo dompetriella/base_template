@@ -126,7 +126,7 @@ class ShowPokemon extends HookWidget {
     Color getColorForPokemonType(String type) {
       switch (type.toLowerCase()) {
         case 'normal':
-          return Colors.grey.shade300;
+          return Colors.grey;
         case 'fire':
           return Colors.red;
         case 'water':
@@ -156,7 +156,7 @@ class ShowPokemon extends HookWidget {
         case 'dragon':
           return Colors.indigo[900]!;
         case 'dark':
-          return Colors.black87;
+          return Colors.black;
         case 'steel':
           return Colors.blueGrey[400]!;
         case 'fairy':

@@ -66,7 +66,7 @@ class SampleApiPage extends HookConsumerWidget {
               children: [
                 IconButton(
                   onPressed: () {
-                    const SamplePageRoute().go(context);
+                    const HomePageRoute().go(context);
                   },
                   icon: const Icon(Icons.arrow_back),
                 ),
@@ -79,7 +79,10 @@ class SampleApiPage extends HookConsumerWidget {
                       sampleStateActions.increment();
                     },
                     child: Row(
-                      children: [Text('${sampleState.counter.toString()} ++')],
+                      children: [
+                        Text(
+                            'Global State Ref = ${sampleState.counter.toString()}')
+                      ],
                     )),
               ],
             )

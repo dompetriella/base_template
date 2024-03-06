@@ -4,6 +4,7 @@ import 'package:base_template/app/state/sample_state.dart';
 import 'package:base_template/app/state/sample_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SampleStreamPage extends ConsumerWidget {
@@ -13,9 +14,9 @@ class SampleStreamPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var sampleState = ref.watch(sampleStateProvider);
     var sampleStateActions = ref.watch(sampleStateProvider.notifier);
-    var sampleStreamState = ref.watch(sampleStreamProvider);
-    var sampleStreamStateActions = ref.watch(sampleStreamProvider.notifier);
-    double percentFilled = (sampleStreamState.waterLevel) / 100;
+
+    final streamData = ref.watch(sampleStreamProvider);
+
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
@@ -64,7 +65,12 @@ class SampleStreamPage extends ConsumerWidget {
               child: AnimatedFractionallySizedBox(
                 duration: 200.ms,
                 alignment: Alignment.bottomCenter,
-                heightFactor: percentFilled,
+                heightFactor: streamData.when(
+                    data: (data) {
+                      return data['water_level'] / 100;
+                    },
+                    error: (error, stack) => throw Exception(error),
+                    loading: () => 0),
                 child: Container(
                   decoration: BoxDecoration(
                       color: Colors.blue.withOpacity(.40),
@@ -90,7 +96,9 @@ class SampleStreamPage extends ConsumerWidget {
                 ExamplePageButton(
                     pageName: 'Increase Water',
                     icon: Icons.flood,
-                    onPressed: () {})
+                    onPressed: () {
+                      increaseWaterLevel(ref);
+                    })
               ],
             ),
           ),
@@ -110,7 +118,9 @@ class SampleStreamPage extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Water Level: ${(percentFilled * 100).toInt()}%',
+                        'Water Level: ${streamData.when(data: (data) {
+                              return data['water_level'];
+                            }, error: (error, stack) => throw Exception(error), loading: () => 0)}%',
                         style: TextStyle(
                             color: Colors.deepPurple,
                             fontSize: 28,

@@ -174,13 +174,15 @@ class ShowPokemon extends HookWidget {
         bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
 
     return Expanded(
-      child: ColoredBox(
+      child: AnimatedContainer(
+        duration: 400.ms,
         color: bgColor,
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
+              AnimatedContainer(
+                duration: 400.ms,
                 height: 300,
                 width: 300,
                 decoration: BoxDecoration(

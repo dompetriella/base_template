@@ -13,3 +13,5 @@ void main() async {
       anonKey: dotenv.env['API_KEY'].toString());
   runApp(const ProviderScope(child: App()));
 }
+
+final supabase = Supabase.instance.client;

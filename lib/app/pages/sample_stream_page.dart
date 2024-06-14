@@ -15,7 +15,8 @@ class SampleStreamPage extends ConsumerWidget {
     var sampleState = ref.watch(sampleStateProvider);
     var sampleStateActions = ref.watch(sampleStateProvider.notifier);
 
-    final streamData = ref.watch(sampleStreamProvider);
+    AsyncValue<List<Map<String, dynamic>>> value =
+        ref.watch(sampleStreamProvider);
 
     return SafeArea(
         child: Scaffold(
@@ -60,25 +61,24 @@ class SampleStreamPage extends ConsumerWidget {
               Colors.green,
               Colors.black,
             ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: AnimatedFractionallySizedBox(
-                duration: 200.ms,
-                alignment: Alignment.bottomCenter,
-                heightFactor: streamData.when(
-                    data: (data) {
-                      return data['water_level'] / 100;
-                    },
-                    error: (error, stack) => throw Exception(error),
-                    loading: () => 0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(.40),
-                      border: Border(
-                          top: BorderSide(color: Colors.white, width: 4))),
+            child: switch (value) {
+              AsyncValue(:final valueOrNull?) => Align(
+                  alignment: Alignment.bottomCenter,
+                  child: AnimatedFractionallySizedBox(
+                    duration: 200.ms,
+                    heightFactor: valueOrNull.first['water_level'] / 100 ?? 0.5,
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(.40),
+                          border: Border(
+                              top: BorderSide(color: Colors.white, width: 4))),
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              AsyncValue(:final error?) => Text('Error: $error'),
+              _ => const CircularProgressIndicator(),
+            },
           ),
           Align(
             alignment: Alignment.center,
@@ -88,11 +88,15 @@ class SampleStreamPage extends ConsumerWidget {
                 ExamplePageButton(
                     pageName: 'Decrease Water',
                     icon: Icons.local_drink,
-                    onPressed: () {}),
+                    onPressed: () {
+                      decreaseWaterLevel();
+                    }),
                 ExamplePageButton(
                     pageName: 'Empty Water',
                     icon: Icons.water_drop_outlined,
-                    onPressed: () {}),
+                    onPressed: () {
+                      emptyWater();
+                    }),
                 ExamplePageButton(
                     pageName: 'Increase Water',
                     icon: Icons.flood,
@@ -118,8 +122,8 @@ class SampleStreamPage extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Water Level: ${streamData.when(data: (data) {
-                              return data['water_level'];
+                        'Water Level: ${value.when(data: (data) {
+                              return data.first['water_level'];
                             }, error: (error, stack) => throw Exception(error), loading: () => 0)}%',
                         style: TextStyle(
                             color: Colors.deepPurple,

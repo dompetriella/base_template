@@ -7,16 +7,20 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'sample_stream.g.dart';
 
 @riverpod
-Stream<Map<String, dynamic>> sampleStream(SampleStreamRef ref) async* {
-  final _stream =
-      supabase.from('sample_stream').select().eq('id', 1).single().asStream();
-  yield* _stream;
+Stream<List<Map<String, dynamic>>> sampleStream(SampleStreamRef ref) async* {
+  final stream = supabase
+      .from('sample_stream')
+      .stream(primaryKey: ['id'])
+      .eq('id', 1)
+      .asBroadcastStream();
+
+  yield* stream;
 }
 
 increaseWaterLevel(WidgetRef ref) async {
   int raw = ref
       .watch(sampleStreamProvider)
-      .whenData((value) => value['water_level'])
+      .whenData((value) => value.first['water_level'])
       .value;
 
   Random random = Random();

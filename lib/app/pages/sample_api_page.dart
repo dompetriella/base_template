@@ -26,9 +26,44 @@ class SampleApiPage extends HookConsumerWidget {
 
     return SafeArea(
       child: Scaffold(
-        appBar: _buildAppBar(context, sampleStateActions, sampleState,
-            pokemonStateActions, openBall),
-        // this is the async stuff
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(children: [
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        const HomePageRoute().go(context);
+                      },
+                      icon: const Icon(Icons.arrow_back),
+                    ),
+                    const Text('Api Route'),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          sampleStateActions.increment();
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                                'Global State Ref = ${sampleState.counter.toString()}')
+                          ],
+                        )),
+                  ],
+                )
+              ]),
+              IconButton(
+                  onPressed: () {
+                    pokemonStateActions.getPokemon(openBall);
+                  },
+                  icon: Icon(Icons.refresh))
+            ],
+          ),
+        ),
         body: Builder(builder: (context) {
           ref.watch(pokemonStateProvider.notifier);
           return Column(
@@ -47,52 +82,6 @@ class SampleApiPage extends HookConsumerWidget {
             ],
           );
         }),
-      ),
-    );
-  }
-
-  AppBar _buildAppBar(
-      BuildContext context,
-      SampleState sampleStateActions,
-      SampleStateData sampleState,
-      PokemonState pokemonStateActions,
-      ValueNotifier<bool> open) {
-    return AppBar(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    const HomePageRoute().go(context);
-                  },
-                  icon: const Icon(Icons.arrow_back),
-                ),
-                const Text('Api Route'),
-                const SizedBox(
-                  width: 10,
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      sampleStateActions.increment();
-                    },
-                    child: Row(
-                      children: [
-                        Text(
-                            'Global State Ref = ${sampleState.counter.toString()}')
-                      ],
-                    )),
-              ],
-            )
-          ]),
-          IconButton(
-              onPressed: () {
-                pokemonStateActions.getPokemon(open);
-              },
-              icon: Icon(Icons.refresh))
-        ],
       ),
     );
   }
@@ -119,13 +108,15 @@ class ShowError extends StatelessWidget {
   }
 }
 
-class ShowPokemon extends HookWidget {
+class ShowPokemon extends HookConsumerWidget {
   final Pokemon value;
   final ValueNotifier openBall;
   const ShowPokemon({super.key, required this.value, required this.openBall});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    var pokemonStateActions = ref.watch(pokemonStateProvider.notifier);
+    ValueNotifier<bool> openBall = useState(true);
     Color getColorForPokemonType(String type) {
       switch (type.toLowerCase()) {
         case 'normal':
@@ -201,6 +192,11 @@ class ShowPokemon extends HookWidget {
                 '#${value.pokemonNumber.toString()} ${value.pokemonName.toUpperCase()}',
                 style: TextStyle(fontSize: 24, color: textColor),
               ),
+              ElevatedButton(
+                  onPressed: () {
+                    pokemonStateActions.getPokemon(openBall);
+                  },
+                  child: Text("Catch 'em All!"))
             ],
           ),
         ),

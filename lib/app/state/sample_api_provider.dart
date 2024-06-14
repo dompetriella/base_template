@@ -27,7 +27,9 @@ class PokemonState extends _$PokemonState {
   }
 
   Future<void> getPokemon(ValueNotifier<bool> open) async {
-    state = AsyncValue.data(await getPokemonFirstCall());
     open.value = false;
+    var newPokemon = AsyncValue.data(await getPokemonFirstCall());
+    state = newPokemon;
+    open.value = true;
   }
 }
